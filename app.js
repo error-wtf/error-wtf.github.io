@@ -102,12 +102,12 @@ async function showRepoList(el) {
         if (!allRepos.length) {
             let page = 1; let all = [];
             while (true) {
-                const batch = await apiFetch(API + '/orgs/' + OWNER + '/repos?per_page=100&type=public&sort=updated&direction=desc&page=' + page);
+                const batch = await apiFetch(API + '/users/' + OWNER + '/repos?per_page=100&sort=updated&direction=desc&page=' + page);
                 all = all.concat(batch);
                 if (batch.length < 100) break;
                 page++;
             }
-            // Show ALL public repos, including archived
+            // Show ALL public repos including archived — no filtering
             allRepos = all;
         }
         document.getElementById('headerStats').textContent = allRepos.length + ' REPOSITORIES';
@@ -118,7 +118,7 @@ async function showRepoList(el) {
 }
 
 // --- Language colors ---
-const LANG_COLORS = {Python:'#3572A5',JavaScript:'#f1e05a',HTML:'#e34c26',CSS:'#563d7c',Shell:'#89e051',Jupyter:'#DA5B0B',TeX:'#3D6117',Markdown:'#083fa1',TypeScript:'#2b7489',Ruby:'#701516'};
+const LANG_COLORS = {Python:'#3572A5',JavaScript:'#f1e05a',HTML:'#e34c26',CSS:'#563d7c',Shell:'#89e051',Jupyter:'#DA5B0B',TeX:'#3D6117',Markdown:'#083fa1',TypeScript:'#2b7489',Ruby:'#701516','C++':'#f34b7d',SCSS:'#c6538c'};
 
 function renderRepoList(el, repos) {
     let html = '<input class="search-box" id="repoSearch" placeholder="> search repositories..." oninput="filterRepos()">';
@@ -130,7 +130,9 @@ function renderRepoList(el, repos) {
         const desc = (r.description || 'No description').replace(/</g,'&lt;');
         const topics = (r.topics || []).map(t => '<span class="repo-topic">' + t + '</span>').join('');
         html += '<div class="repo-card" onclick="navigate(\'repo/' + r.name + '\')" data-name="' + r.name.toLowerCase() + '" data-desc="' + desc.toLowerCase() + '">';
-        html += '<div class="repo-name">' + r.name + (r.archived ? ' <span style="color:#ffcc00;font-size:0.7em;opacity:0.85">ARCHIVED</span>' : '') + '</div>';
+        html += '<div class="repo-name">' + r.name;
+        if (r.archived) html += ' <span style="color:#ffcc00;font-size:0.7em;opacity:0.85">ARCHIVED</span>';
+        html += '</div>';
         html += '<div class="repo-desc">' + desc + '</div>';
         if (topics) html += '<div class="repo-topics">' + topics + '</div>';
         html += '<div class="repo-meta">';
@@ -207,11 +209,11 @@ function renderTreeItems(node, depth, repoName, activePath) {
 function renderExplorer(el, repoName, filePath) {
     const r = currentRepo;
     let html = '<div class="repo-header">';
-    html += '<h1>' + r.name + '</h1>';
+    html += '<h1>' + r.name + (r.archived ? ' <span style="color:#ffcc00;font-size:0.5em">ARCHIVED</span>' : '') + '</h1>';
     html += '<p>' + (r.description || '') + '</p>';
     html += '<div class="repo-actions">';
-    html += '<a class="btn" href="' + r.html_url + '" target="_blank">Open on GitHub</a>';
-    html += '<a class="btn" href="' + r.html_url + '/archive/refs/heads/' + r.default_branch + '.zip">Download ZIP</a>';
+    html += '<a class="btn" href="' + r.html_url + '" target="_blank" rel="noopener">Open on GitHub</a>';
+    html += '<a class="btn" href="' + r.html_url + '/archive/refs/heads/' + r.default_branch + '.zip" target="_blank" rel="noopener">Download ZIP</a>';
     html += '<span class="btn" onclick="copyClone(\'' + r.clone_url + '\')">Clone URL</span>';
     html += '</div></div>';
     
@@ -287,7 +289,7 @@ async function loadFile(repoName, filePath) {
     const binExts = ['pdf','zip','tar','gz','exe','dll','so','bin','whl','pyc','mp3','mp4','wav','avi','mov'];
     if (binExts.includes(ext)) {
         const url = RAW + '/' + OWNER + '/' + repoName + '/' + currentRepo.default_branch + '/' + filePath;
-        vp.innerHTML = '<div class="viewer-header">' + filePath + '</div><div class="viewer-empty">Binary file (' + ext + ')<br><br><a class="btn" href="' + url + '" target="_blank">Download</a></div>';
+        vp.innerHTML = '<div class="viewer-header">' + filePath + '</div><div class="viewer-empty">Binary file (' + ext + ')<br><br><a class="btn" href="' + url + '" target="_blank" rel="noopener">Download</a></div>';
         return;
     }
     
