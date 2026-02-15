@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>error-wtf // MATRIX PORTAL</title>
+    <link rel="stylesheet" href="matrix.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F7E2;</text></svg>">
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+
+    <div id="app">
+        <header id="header">
+            <div class="header-left">
+                <span class="logo" onclick="navigate('')">error-wtf</span>
+                <span class="header-sep">//</span>
+                <span id="breadcrumb" class="breadcrumb"></span>
+            </div>
+            <div class="header-right">
+                <span class="header-stats" id="headerStats"></span>
+            </div>
+        </header>
+
+        <main id="content"></main>
+
+        <footer id="footer">
+            <span>ANTI-CAPITALIST SOFTWARE LICENSE v1.4</span>
+            <span class="footer-sep">|</span>
+            <span>mail@error.wtf</span>
+            <span class="footer-sep">|</span>
+            <a href="https://github.com/error-wtf" target="_blank" rel="noopener">github.com/error-wtf</a>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
