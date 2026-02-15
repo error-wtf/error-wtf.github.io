@@ -45,7 +45,7 @@ case 'uname':tp('SardinianOS 4.1.3-matrix x86_64','green');break;
 case 'date':tp(new Date().toString(),'green');break;
 case 'clear':document.getElementById('termOutput').innerHTML='';break;
 case 'echo':tp(args.join(' '),'green');break;
-case 'ping':if(args[0]==='matrix')tp('PING matrix.local: time=0.001ms (it\'s all around you)','green');else if(args[0]==='sardinia')tp('PING sardinia.free: time=∞ms (unplug first)','yellow');else tp('host unreachable','red');break;
+case 'ping':doPing(args);break;
 case 'ls':case 'dir':doLs();break;
 case 'cat':doCat(args);break;
 case 'talk':doTalkStart(args);break;
@@ -64,6 +64,53 @@ case 'cd':tp('There is no escaping this directory.','dim');break;
 case 'ssh':tp('Connection refused. The machines are watching.','red');break;
 case 'knock':tp('Neo: "...knock knock."','green');setTimeout(function(){tp('Follow the white rabbit.','dim');},800);break;
 default:tp(c0+': command not found. Type "help".','red');}}
+
+function doPing(args){
+if(!args.length){tp('Usage: ping <host>','dim');tp('Try: ping matrix, ping error.wtf, ping sardinia, ping zion ...','dim');return;}
+var host=args[0].toLowerCase();
+var PING_DB={
+'matrix':{ip:'10.0.0.1',ms:'0.001',msg:'it\'s all around you',color:'green'},
+'matrix.local':{ip:'10.0.0.1',ms:'0.001',msg:'it\'s all around you',color:'green'},
+'error.wtf':{ip:'185.199.108.153',ms:'12.4',msg:'portal online',color:'green'},
+'error-wtf.github.io':{ip:'185.199.108.153',ms:'14.2',msg:'you are here',color:'green'},
+'github.com':{ip:'140.82.121.3',ms:'22.7',msg:'the source',color:'green'},
+'sardinia':{ip:'192.168.φ.∞',ms:'∞',msg:'unplug first',color:'yellow'},
+'sardinia.free':{ip:'192.168.φ.∞',ms:'∞',msg:'unplug first',color:'yellow'},
+'zion':{ip:'10.13.37.1',ms:'187.3',msg:'last human city — signal weak',color:'yellow'},
+'nebuchadnezzar':{ip:'10.13.37.42',ms:'3.7',msg:'hovercraft online',color:'green'},
+'oracle':{ip:'10.0.0.99',ms:'42.0',msg:'she knows you\'re coming',color:'green'},
+'architect':{ip:'0.0.0.0',ms:'0.000',msg:'I have been waiting for you',color:'red'},
+'localhost':{ip:'127.0.0.1',ms:'0.042',msg:'you pinged yourself',color:'green'},
+'127.0.0.1':{ip:'127.0.0.1',ms:'0.042',msg:'you pinged yourself',color:'green'},
+'google.com':{ip:'142.250.185.78',ms:'8.3',msg:'even Google runs in the Matrix',color:'green'},
+'openai.com':{ip:'104.18.6.192',ms:'31.2',msg:'artificial intelligence — or is it?',color:'yellow'},
+'nasa.gov':{ip:'23.22.39.120',ms:'47.8',msg:'they don\'t know about SSZ yet',color:'green'},
+'ssz':{ip:'φ.π.∞.137',ms:'1.618',msg:'Segmented Spacetime — Ξ(r) = r_s/(2r)',color:'green'},
+'cern.ch':{ip:'188.184.9.234',ms:'28.1',msg:'looking for the Higgs — we found φ',color:'green'}
+};
+var entry=PING_DB[host];
+if(entry){
+tp('PING '+host+' ('+entry.ip+'):','green');
+var count=4,i=0;
+var iv=setInterval(function(){
+if(i<count){
+var jitter=(Math.random()*2-1).toFixed(1);
+var t=entry.ms==='∞'?'∞':(parseFloat(entry.ms)+parseFloat(jitter)).toFixed(1);
+tp('  seq='+i+' time='+t+'ms','green');
+i++;
+}else{
+clearInterval(iv);
+tC('--- '+host+' ping: '+entry.msg+' ---',entry.color);
+}
+},300);
+}else{
+tp('PING '+host+':','dim');
+var i=0;
+var iv=setInterval(function(){
+if(i<3){tp('  seq='+i+' *** Request timed out','red');i++;}
+else{clearInterval(iv);tp('--- '+host+': host unreachable (not in the Matrix) ---','red');}
+},400);
+}}
 
 function doHelp(){
 tp('=== MATRIX TERMINAL COMMANDS ===','green');
@@ -106,7 +153,7 @@ function closeTetris(){var o=document.getElementById('tetrisOverlay'),f=document
 function doHack(){var m=['[ACCESSING MAINFRAME...]','[ENCRYPTION BYPASS...]','[CRYPTO-BARRIER BREACHED]','[ROOT LOGIN...]','[KEYSTREAM: OK]','[TRACING... REDIRECTED]','[DATA LINK UP]','[TRINITY: "I\'m inside."]'],i=0;var iv=setInterval(function(){if(i<m.length)tp(m[i++],'green');else{clearInterval(iv);tp('[ACCESS GRANTED]','green');}},400);}
 function doRain(){rainActive=!rainActive;var c=document.getElementById('matrixCanvas');if(c)c.style.opacity=rainActive?'0.4':'0';tp(rainActive?'Matrix rain: ON — the code is everywhere.':'Matrix rain: OFF — you see only darkness.','green');}
 function doColab(){tp('=== GOOGLE COLAB NOTEBOOKS ===','green');var C='https://colab.research.google.com/github/error-wtf/',nbs=[['Unified-Results','SSZ Complete','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/SSZ_Colab_Complete.ipynb'],['Unified-Results','Full Pipeline','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/SSZ_Full_Pipeline_Colab.ipynb'],['Unified-Results','Master Pipeline','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/SSZ_Master_Complete_Pipeline_Colab.ipynb'],['Unified-Results','Hawking Toolkit','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/HAWKING_TOOLKIT_COLAB.ipynb'],['ssz-qubits','SSZ Qubits','ssz-qubits/blob/main/SSZ_Qubits_Colab.ipynb'],['ssz-schumann','SSZ Schumann','ssz-schumann/blob/main/SSZ_Schumann_Colab.ipynb'],['segmented-calculation-suite','SSZ Full App','segmented-calculation-suite/blob/main/SSZ_Colab_Full_App.ipynb'],['segmented-energy','Segmented Energy','segmented-energy/blob/main/Segmented_Energy_Colab.ipynb'],['Segmented-Spacetime-StarMaps','Star Explorer','Segmented-Spacetime-StarMaps/blob/main/SSZ_Explorer_Colab.ipynb'],['Segmented-Spacetime-StarMaps','Gradio Explorer','Segmented-Spacetime-StarMaps/blob/main/SSZ_Explorer_Gradio_Colab.ipynb'],['ssz-lensing','SSZ Lensing','ssz-lensing/blob/main/SSZ_Lensing_Colab.ipynb'],['pdf-translator-enhanced','PDF Translator','pdf-translator-enhanced/blob/main/PDF_Translator_Colab.ipynb']],last='';nbs.forEach(function(n){if(n[0]!==last){tC('[ '+n[0]+' ]','#0f0');last=n[0];}tH('  <a href="'+C+n[2]+'" target="_blank" rel="noopener" style="color:#ffcc00;text-decoration:underline">'+n[1]+'</a>');});tp('total '+nbs.length+' notebooks — click to open in Colab','dim');}
-function doAbout(){tp('error-wtf // MATRIX PORTAL','green');tp('35 repos | SSZ physics | tools | research','default');tp('Authors: Carmen N. Wrede, Lino P. Casu','default');tp('Type "ls" to browse, "tetris" to play.','dim');}
+function doAbout(){tp('error-wtf // MATRIX PORTAL','green');tp('SSZ physics | tools | research','default');tp('Authors: Carmen N. Wrede, Lino P. Casu','default');tp('Type "ls" to browse, "tetris" to play.','dim');}
 async function loadChatDB(){try{var r=await fetch('chat_db.json');var d=await r.json();Object.assign(CHAT_DB,d);}catch(e){console.error('chat_db load error',e);}}
 document.addEventListener('DOMContentLoaded',async function(){await loadChatDB();initChat();
 var tc=document.getElementById('tetrisClose');if(tc)tc.addEventListener('click',closeTetris);
