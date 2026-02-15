@@ -10,7 +10,7 @@ const RAW = 'https://raw.githubusercontent.com';
 // --- Matrix Rain ---
 const canvas = document.getElementById('matrixCanvas');
 const ctx = canvas.getContext('2d');
-const CHARS = 'アァカサタナハマヤャラワガザダバパ0123456789ABCDEF';
+const RAIN_CHARS = 'アァカサタナハマヤャラワガザダバパ0123456789ABCDEF';
 const FS = 14;
 let cols, drops;
 function initRain() {
@@ -26,7 +26,7 @@ function drawRain() {
         const bright = Math.random() > 0.9 ? '#fff' : (Math.random() > 0.5 ? '#0F0' : '#00cc33');
         ctx.fillStyle = bright;
         ctx.font = FS + 'px monospace';
-        ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], i * FS, drops[i] * FS);
+        ctx.fillText(RAIN_CHARS[Math.floor(Math.random() * RAIN_CHARS.length)], i * FS, drops[i] * FS);
         if (drops[i] * FS > canvas.height && Math.random() > 0.975) drops[i] = 0;
         drops[i] += 0.5 + Math.random() * 0.5;
     }
