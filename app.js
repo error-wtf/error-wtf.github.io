@@ -250,12 +250,22 @@ function renderExplorer(el, repoName, filePath) {
     html += '<div class="tree-panel">' + treeHtml + '</div>';
     html += '<div class="viewer-panel" id="viewerPanel">';
     if (!filePath) {
-        html += '<div class="viewer-empty">Select a file to view</div>';
+        html += '<div class="loading">LOADING README...</div>';
     }
     html += '</div></div>';
     
     el.innerHTML = html;
-    if (filePath) loadFile(repoName, filePath);
+    if (filePath) {
+        loadFile(repoName, filePath);
+    } else {
+        // Auto-load README.md when entering a repo
+        const readme = currentTree.find(t => t.type === 'blob' && /^readme(\.\w+)?$/i.test(t.path));
+        if (readme) {
+            loadFile(repoName, readme.path);
+        } else {
+            document.getElementById('viewerPanel').innerHTML = '<div class="viewer-empty">No README found</div>';
+        }
+    }
 }
 
 function copyClone(url) {
