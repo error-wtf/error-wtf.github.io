@@ -3,6 +3,7 @@ const CHAT_DB={};
 const CHARS={neo:{name:'Neo',color:'#00ff41'},trinity:{name:'Trinity',color:'#00ccff'},morpheus:{name:'Morpheus',color:'#ffcc00'},smith:{name:'Agent Smith',color:'#ff3333'},oracle:{name:'Oracle',color:'#cc66ff'}};
 let termExpanded=false,termHist=[],termHistIdx=-1,talkChar=null,talkNode=null;
 const EXIT_CMDS=['exit','wake up','red pill','follow the white rabbit','escape','free your mind','take the red pill','unplug','leave the matrix','break free','logout','there is no spoon'];
+const MATRIX_QUOTES=['There is no spoon.','You take the red pill — you stay in Wonderland.','I know kung fu.','Welcome to the real world.','Unfortunately, no one can be told what the Matrix is.','Welcome to the desert of the real.','Free your mind.','The Matrix has you Neo.','Choice. The problem is choice.','Do not try and bend the spoon — there is no spoon.','I can only show you the door.'];
 
 function initChat(){
 const h=document.getElementById('header'),bar=document.createElement('div');
@@ -50,6 +51,11 @@ case 'cat':doCat(args);break;
 case 'talk':doTalkStart(args);break;
 case 'characters':case 'chars':doCharList();break;
 case 'matrix':doMatrixAnim();break;
+case 'tetris':doTetris();break;
+case 'quote':tp(MATRIX_QUOTES[Math.floor(Math.random()*MATRIX_QUOTES.length)],'green');break;
+case 'hack':doHack();break;
+case 'rain':doRain();break;
+case 'about':doAbout();break;
 case 'neo':case 'trinity':case 'morpheus':case 'smith':case 'oracle':doTalkStart([c0]);break;
 case 'su':case 'sudo':tp('Access denied. You are not The One.','red');break;
 case 'rm':tp('Nice try, Agent.','red');break;
@@ -69,6 +75,11 @@ tH('<span style="color:#0f0">talk &lt;name&gt;</span>   <span style="opacity:.5"
 tH('<span style="color:#0f0">characters</span>    <span style="opacity:.5">list characters</span>');
 tH('<span style="color:#0f0">ping &lt;host&gt;</span>   <span style="opacity:.5">ping a host</span>');
 tH('<span style="color:#0f0">matrix</span>        <span style="opacity:.5">???</span>');
+tH('<span style="color:#0f0">tetris</span>        <span style="opacity:.5">play Matrix Tetris</span>');
+tH('<span style="color:#0f0">quote</span>         <span style="opacity:.5">random Matrix quote</span>');
+tH('<span style="color:#0f0">hack</span>          <span style="opacity:.5">hack simulation</span>');
+tH('<span style="color:#0f0">rain</span>          <span style="opacity:.5">toggle matrix rain</span>');
+tH('<span style="color:#0f0">about</span>         <span style="opacity:.5">about this portal</span>');
 tp('SECRET COMMANDS EXIST. Can you find the exit?','yellow');
 tp('Hint: What would Morpheus tell you to do?','dim');}
 
@@ -88,5 +99,14 @@ function doExit(){tC('Wake up...','#ff3333');setTimeout(function(){tC('The Matri
 
 function doMatrixAnim(){var c='アァカサタナハマヤャ01';for(var i=0;i<5;i++){(function(i){setTimeout(function(){var l='';for(var j=0;j<50;j++)l+=c[Math.floor(Math.random()*c.length)];tp(l,'green');},i*100);})(i);}setTimeout(function(){tp('The Matrix is everywhere.','dim');},600);}
 
+function doTetris(){tp('[LOADING MATRIX TETRIS...]','green');setTimeout(function(){var o=document.getElementById('tetrisOverlay'),f=document.getElementById('tetrisFrame');if(o&&f){f.src='tetris.html?user=operator';o.style.display='block';}else tp('Tetris not available.','red');},500);}
+function closeTetris(){var o=document.getElementById('tetrisOverlay'),f=document.getElementById('tetrisFrame');if(o){o.style.display='none';f.src='';}}
+function doHack(){var m=['[ACCESSING MAINFRAME...]','[ENCRYPTION BYPASS...]','[CRYPTO-BARRIER BREACHED]','[ROOT LOGIN...]','[KEYSTREAM: OK]','[TRACING... REDIRECTED]','[DATA LINK UP]','[TRINITY: "I\'m inside."]'],i=0;var iv=setInterval(function(){if(i<m.length)tp(m[i++],'green');else{clearInterval(iv);tp('[ACCESS GRANTED]','green');}},400);}
+function doRain(){if(typeof rainActive!=='undefined'){rainActive=!rainActive;tp(rainActive?'Matrix rain ON':'Matrix rain OFF','green');}else tp('Rain controlled by main canvas.','dim');}
+function doAbout(){tp('error-wtf // MATRIX PORTAL','green');tp('35 repos | SSZ physics | tools | research','default');tp('Authors: Carmen N. Wrede, Lino P. Casu','default');tp('Type "ls" to browse, "tetris" to play.','dim');}
 async function loadChatDB(){try{var r=await fetch('chat_db.json');var d=await r.json();Object.assign(CHAT_DB,d);}catch(e){console.error('chat_db load error',e);}}
-document.addEventListener('DOMContentLoaded',async function(){await loadChatDB();initChat();});
+document.addEventListener('DOMContentLoaded',async function(){await loadChatDB();initChat();
+var tc=document.getElementById('tetrisClose');if(tc)tc.addEventListener('click',closeTetris);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var o=document.getElementById('tetrisOverlay');if(o&&o.style.display==='block')closeTetris();}});
+window.addEventListener('message',function(e){if(e.data==='closeTetris')closeTetris();});
+});
