@@ -102,45 +102,13 @@ async function showRepoList(el) {
         if (!allRepos.length) {
             let page = 1; let all = [];
             while (true) {
-                const batch = await apiFetch(API + '/users/' + OWNER + '/repos?per_page=100&sort=updated&page=' + page);
+                const batch = await apiFetch(API + '/orgs/' + OWNER + '/repos?per_page=100&type=public&sort=updated&direction=desc&page=' + page);
                 all = all.concat(batch);
                 if (batch.length < 100) break;
                 page++;
             }
-            // Show ALL repos: forks included, only skip archived
-            allRepos = all.filter(r => !r.archived);
-            // Add private repos that the public API cannot return
-            const privateRepos = [
-                {
-                    name: 'mastodon-media-columns',
-                    description: 'Mastodon fork with profile media tabs (Videos/Audio/Images), filter UI, 250MB uploads with transcoding, and privacy-first defaults',
-                    html_url: 'https://github.com/error-wtf/mastodon-media-columns',
-                    language: 'Ruby',
-                    stargazers_count: 0,
-                    updated_at: '2026-01-24T18:20:11Z',
-                    topics: ['mastodon', 'media'],
-                    default_branch: 'master',
-                    clone_url: 'https://github.com/error-wtf/mastodon-media-columns.git',
-                    private: true
-                },
-                {
-                    name: 'TRYING-FETCH-LIGO',
-                    description: 'LIGO gravitational wave data fetching (private)',
-                    html_url: 'https://github.com/error-wtf/TRYING-FETCH-LIGO',
-                    language: 'Python',
-                    stargazers_count: 0,
-                    updated_at: '2025-12-07T20:12:05Z',
-                    topics: ['ligo', 'gravitational-waves'],
-                    default_branch: 'main',
-                    clone_url: 'https://github.com/error-wtf/TRYING-FETCH-LIGO.git',
-                    private: true
-                }
-            ];
-            // Merge private repos (avoid duplicates if API somehow returns them)
-            const existingNames = new Set(allRepos.map(r => r.name));
-            privateRepos.forEach(pr => {
-                if (!existingNames.has(pr.name)) allRepos.push(pr);
-            });
+            // Show ALL public repos, including archived
+            allRepos = all;
         }
         document.getElementById('headerStats').textContent = allRepos.length + ' REPOSITORIES';
         renderRepoList(el, allRepos);
@@ -162,7 +130,7 @@ function renderRepoList(el, repos) {
         const desc = (r.description || 'No description').replace(/</g,'&lt;');
         const topics = (r.topics || []).map(t => '<span class="repo-topic">' + t + '</span>').join('');
         html += '<div class="repo-card" onclick="navigate(\'repo/' + r.name + '\')" data-name="' + r.name.toLowerCase() + '" data-desc="' + desc.toLowerCase() + '">';
-        html += '<div class="repo-name">' + r.name + (r.private ? ' <span style="color:#f44;font-size:0.7em;opacity:0.7">🔒 PRIVATE</span>' : '') + '</div>';
+        html += '<div class="repo-name">' + r.name + (r.archived ? ' <span style="color:#ffcc00;font-size:0.7em;opacity:0.85">ARCHIVED</span>' : '') + '</div>';
         html += '<div class="repo-desc">' + desc + '</div>';
         if (topics) html += '<div class="repo-topics">' + topics + '</div>';
         html += '<div class="repo-meta">';
