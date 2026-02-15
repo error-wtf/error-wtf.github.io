@@ -23,7 +23,7 @@ document.querySelector('.chat-toggle-icon').innerHTML=termExpanded?'&#9650;':'&#
 if(termExpanded){var o=document.getElementById('termOutput');if(!o.children.length)printBoot();setTimeout(function(){document.getElementById('termInput').focus();},100);}}
 
 function printBoot(){
-tp('MATRIX TERMINAL v4.1.3 — Zion OS','system');tp('Encryption: AES-256 | Connection: SECURE','system');
+tp('MATRIX TERMINAL v4.1.3 — Sardinian OS','system');tp('Encryption: AES-256 | Connection: SECURE','system');
 tp('Type "help" for commands.','green');tp('Hint: There is always an exit...','dim');}
 
 function tp(t,type){var o=document.getElementById('termOutput'),d=document.createElement('div');d.className='term-line term-'+(type||'default');d.textContent=t;o.appendChild(d);o.scrollTop=o.scrollHeight;}
@@ -40,12 +40,12 @@ if(EXIT_CMDS.includes(cmd)){doExit();return;}
 var parts=cmd.split(/\s+/),c0=parts[0],args=parts.slice(1);
 switch(c0){
 case 'help':doHelp();break;
-case 'whoami':tp('operator — Zion resistance cell','green');break;
-case 'uname':tp('ZionOS 4.1.3-matrix x86_64','green');break;
+case 'whoami':tp('operator — Sardinian resistance cell','green');break;
+case 'uname':tp('SardinianOS 4.1.3-matrix x86_64','green');break;
 case 'date':tp(new Date().toString(),'green');break;
 case 'clear':document.getElementById('termOutput').innerHTML='';break;
 case 'echo':tp(args.join(' '),'green');break;
-case 'ping':if(args[0]==='matrix')tp('PING matrix.local: time=0.001ms (it\'s all around you)','green');else if(args[0]==='zion')tp('PING zion.free: time=∞ms (unplug first)','yellow');else tp('host unreachable','red');break;
+case 'ping':if(args[0]==='matrix')tp('PING matrix.local: time=0.001ms (it\'s all around you)','green');else if(args[0]==='sardinia')tp('PING sardinia.free: time=∞ms (unplug first)','yellow');else tp('host unreachable','red');break;
 case 'ls':case 'dir':doLs();break;
 case 'cat':doCat(args);break;
 case 'talk':doTalkStart(args);break;
