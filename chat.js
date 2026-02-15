@@ -55,6 +55,7 @@ case 'tetris':doTetris();break;
 case 'quote':tp(MATRIX_QUOTES[Math.floor(Math.random()*MATRIX_QUOTES.length)],'green');break;
 case 'hack':doHack();break;
 case 'rain':doRain();break;
+case 'colab':case 'colabs':case 'notebooks':doColab();break;
 case 'about':doAbout();break;
 case 'neo':case 'trinity':case 'morpheus':case 'smith':case 'oracle':doTalkStart([c0]);break;
 case 'su':case 'sudo':tp('Access denied. You are not The One.','red');break;
@@ -79,6 +80,7 @@ tH('<span style="color:#0f0">tetris</span>        <span style="opacity:.5">play 
 tH('<span style="color:#0f0">quote</span>         <span style="opacity:.5">random Matrix quote</span>');
 tH('<span style="color:#0f0">hack</span>          <span style="opacity:.5">hack simulation</span>');
 tH('<span style="color:#0f0">rain</span>          <span style="opacity:.5">toggle matrix rain</span>');
+tH('<span style="color:#0f0">colab</span>         <span style="opacity:.5">list Colab notebooks</span>');
 tH('<span style="color:#0f0">about</span>         <span style="opacity:.5">about this portal</span>');
 tp('SECRET COMMANDS EXIST. Can you find the exit?','yellow');
 tp('Hint: What would Morpheus tell you to do?','dim');}
@@ -103,6 +105,7 @@ function doTetris(){tp('[LOADING MATRIX TETRIS...]','green');setTimeout(function
 function closeTetris(){var o=document.getElementById('tetrisOverlay'),f=document.getElementById('tetrisFrame');if(o){o.style.display='none';f.src='';}}
 function doHack(){var m=['[ACCESSING MAINFRAME...]','[ENCRYPTION BYPASS...]','[CRYPTO-BARRIER BREACHED]','[ROOT LOGIN...]','[KEYSTREAM: OK]','[TRACING... REDIRECTED]','[DATA LINK UP]','[TRINITY: "I\'m inside."]'],i=0;var iv=setInterval(function(){if(i<m.length)tp(m[i++],'green');else{clearInterval(iv);tp('[ACCESS GRANTED]','green');}},400);}
 function doRain(){rainActive=!rainActive;var c=document.getElementById('matrixCanvas');if(c)c.style.opacity=rainActive?'0.4':'0';tp(rainActive?'Matrix rain: ON — the code is everywhere.':'Matrix rain: OFF — you see only darkness.','green');}
+function doColab(){tp('=== GOOGLE COLAB NOTEBOOKS ===','green');var C='https://colab.research.google.com/github/error-wtf/',nbs=[['Unified-Results','SSZ Complete','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/SSZ_Colab_Complete.ipynb'],['Unified-Results','Full Pipeline','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/SSZ_Full_Pipeline_Colab.ipynb'],['Unified-Results','Master Pipeline','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/SSZ_Master_Complete_Pipeline_Colab.ipynb'],['Unified-Results','Hawking Toolkit','Segmented-Spacetime-Mass-Projection-Unified-Results/blob/main/HAWKING_TOOLKIT_COLAB.ipynb'],['ssz-qubits','SSZ Qubits','ssz-qubits/blob/main/SSZ_Qubits_Colab.ipynb'],['ssz-schumann','SSZ Schumann','ssz-schumann/blob/main/SSZ_Schumann_Colab.ipynb'],['segmented-calculation-suite','SSZ Full App','segmented-calculation-suite/blob/main/SSZ_Colab_Full_App.ipynb'],['segmented-energy','Segmented Energy','segmented-energy/blob/main/Segmented_Energy_Colab.ipynb'],['Segmented-Spacetime-StarMaps','Star Explorer','Segmented-Spacetime-StarMaps/blob/main/SSZ_Explorer_Colab.ipynb'],['Segmented-Spacetime-StarMaps','Gradio Explorer','Segmented-Spacetime-StarMaps/blob/main/SSZ_Explorer_Gradio_Colab.ipynb'],['ssz-lensing','SSZ Lensing','ssz-lensing/blob/main/SSZ_Lensing_Colab.ipynb'],['pdf-translator-enhanced','PDF Translator','pdf-translator-enhanced/blob/main/PDF_Translator_Colab.ipynb']],last='';nbs.forEach(function(n){if(n[0]!==last){tC('[ '+n[0]+' ]','#0f0');last=n[0];}tH('  <a href="'+C+n[2]+'" target="_blank" rel="noopener" style="color:#ffcc00;text-decoration:underline">'+n[1]+'</a>');});tp('total '+nbs.length+' notebooks — click to open in Colab','dim');}
 function doAbout(){tp('error-wtf // MATRIX PORTAL','green');tp('35 repos | SSZ physics | tools | research','default');tp('Authors: Carmen N. Wrede, Lino P. Casu','default');tp('Type "ls" to browse, "tetris" to play.','dim');}
 async function loadChatDB(){try{var r=await fetch('chat_db.json');var d=await r.json();Object.assign(CHAT_DB,d);}catch(e){console.error('chat_db load error',e);}}
 document.addEventListener('DOMContentLoaded',async function(){await loadChatDB();initChat();
