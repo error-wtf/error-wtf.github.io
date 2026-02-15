@@ -20,18 +20,22 @@ function initRain() {
     drops = Array.from({length: cols}, () => Math.random() * canvas.height / FS);
 }
 function drawRain() {
-    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillStyle = 'rgba(0,0,0,0.03)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#0F0';
-    ctx.font = FS + 'px monospace';
     for (let i = 0; i < cols; i++) {
+        const bright = Math.random() > 0.9 ? '#fff' : (Math.random() > 0.5 ? '#0F0' : '#00cc33');
+        ctx.fillStyle = bright;
+        ctx.font = FS + 'px monospace';
         ctx.fillText(CHARS[Math.floor(Math.random() * CHARS.length)], i * FS, drops[i] * FS);
         if (drops[i] * FS > canvas.height && Math.random() > 0.975) drops[i] = 0;
-        drops[i] += 0.3 + Math.random() * 0.4;
+        drops[i] += 0.5 + Math.random() * 0.5;
     }
 }
-initRain();
-setInterval(drawRain, 50);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { initRain(); setInterval(drawRain, 33); });
+} else {
+    initRain(); setInterval(drawRain, 33);
+}
 window.addEventListener('resize', initRain);
 
 // --- State ---
