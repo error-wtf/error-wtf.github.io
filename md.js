@@ -46,13 +46,16 @@ function renderMarkdown(md) {
 }
 function inl(s) {
     s = escapeHtml(s);
-    s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(_,a,u){return '<img alt="'+a+'" src="'+u+'" style="max-width:100%">';});
-    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_,t,u){return '<a href="'+u+'" target="_blank">'+t+'</a>';});
-    s = s.replace(/\*\*(.+?)\*\*/g, function(_,t){return '<strong>'+t+'</strong>';});
-    s = s.replace(/__(.+?)__/g, function(_,t){return '<strong>'+t+'</strong>';});
-    s = s.replace(/\*(.+?)\*/g, function(_,t){return '<em>'+t+'</em>';});
-    s = s.replace(/_([^_]+)_/g, function(_,t){return '<em>'+t+'</em>';});
-    s = s.replace(/~~(.+?)~~/g, function(_,t){return '<del>'+t+'</del>';});
-    s = s.replace(/`([^`]+)`/g, function(_,t){return '<code>'+t+'</code>';});
+    var ph = [];
+    function hold(h) { ph.push(h); return '\x00P'+( ph.length-1)+'P\x00'; }
+    s = s.replace(/`([^`]+)`/g, function(_,t){ return hold('<code>'+t+'</code>'); });
+    s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(_,a,u){ return hold('<img alt="'+a+'" src="'+u+'" style="max-width:100%">'); });
+    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_,t,u){ return hold('<a href="'+u+'" target="_blank">'+t+'</a>'); });
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/__(.+?)__/g, '<strong>$1</strong>');
+    s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
+    s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
+    s = s.replace(/\x00P(\d+)P\x00/g, function(_,i){ return ph[+i]; });
     return s;
 }
