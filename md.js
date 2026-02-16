@@ -53,9 +53,11 @@ function renderMarkdown(md, baseUrl) {
     return out;
 }
 function inl(s) {
-    s = escapeHtml(s);
     var ph = [];
     function hold(h) { ph.push(h); return '\x00P'+( ph.length-1)+'P\x00'; }
+    s = s.replace(/<img\s+[^>]*src=["']([^"']+)["'][^>]*>/gi, function(m,u){ return hold('<img src="'+_resolveUrl(u)+'" style="max-width:100%">'); });
+    s = s.replace(/<a\s+[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi, function(_,u,t){ return hold('<a href="'+_resolveUrl(u)+'" target="_blank">'+t+'</a>'); });
+    s = escapeHtml(s);
     s = s.replace(/`([^`]+)`/g, function(_,t){ return hold('<code>'+t+'</code>'); });
     s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(_,a,u){ return hold('<img alt="'+a+'" src="'+_resolveUrl(u)+'" style="max-width:100%">'); });
     s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_,t,u){ return hold('<a href="'+_resolveUrl(u)+'" target="_blank">'+t+'</a>'); });
@@ -64,6 +66,7 @@ function inl(s) {
     s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
     s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
     s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
+    s = s.replace(/(^|[\s(])((https?:\/\/)[^\s<&)\]"']+)/g, function(_,pre,url){ return pre+hold('<a href="'+url+'" target="_blank">'+url+'</a>'); });
     s = s.replace(/\x00P(\d+)P\x00/g, function(_,i){ return ph[+i]; });
     return s;
 }
