@@ -52,6 +52,7 @@ case 'talk':doTalkStart(args);break;
 case 'characters':case 'chars':doCharList();break;
 case 'matrix':doMatrixAnim();break;
 case 'tetris':doTetris();break;
+case 'radio':doRadio();break;
 case 'quote':tp(MATRIX_QUOTES[Math.floor(Math.random()*MATRIX_QUOTES.length)],'green');break;
 case 'hack':doHack();break;
 case 'rain':doRain();break;
@@ -124,6 +125,7 @@ tH('<span style="color:#0f0">characters</span>    <span style="opacity:.5">list 
 tH('<span style="color:#0f0">ping &lt;host&gt;</span>   <span style="opacity:.5">ping a host</span>');
 tH('<span style="color:#0f0">matrix</span>        <span style="opacity:.5">???</span>');
 tH('<span style="color:#0f0">tetris</span>        <span style="opacity:.5">play Matrix Tetris</span>');
+tH('<span style="color:#0f0">radio</span>         <span style="opacity:.5">open Webamp radio player</span>');
 tH('<span style="color:#0f0">quote</span>         <span style="opacity:.5">random Matrix quote</span>');
 tH('<span style="color:#0f0">hack</span>          <span style="opacity:.5">hack simulation</span>');
 tH('<span style="color:#0f0">rain</span>          <span style="opacity:.5">toggle matrix rain</span>');
@@ -228,6 +230,8 @@ tC('\u2014 The Matrix is everywhere. But so is hope. \u2014','dim');
 }
 
 function doTetris(){tp('[LOADING MATRIX TETRIS...]','green');setTimeout(function(){var o=document.getElementById('tetrisOverlay'),f=document.getElementById('tetrisFrame');if(o&&f){f.src='tetris.html?user=operator';o.style.display='block';}else tp('Tetris not available.','red');},500);}
+function doRadio(){tp('[TUNING INTO THE MATRIX FREQUENCIES...]','green');setTimeout(function(){var o=document.getElementById('radioOverlay'),f=document.getElementById('radioFrame');if(o&&f){f.src='https://error-wtf.github.io/webamp-embed/';o.style.display='block';}else tp('Radio not available.','red');},500);}
+function closeRadio(){var o=document.getElementById('radioOverlay'),f=document.getElementById('radioFrame');if(o){o.style.display='none';f.src='';}}
 function closeTetris(){var o=document.getElementById('tetrisOverlay'),f=document.getElementById('tetrisFrame');if(o){o.style.display='none';f.src='';}}
 function doHack(){var m=['[ACCESSING MAINFRAME...]','[ENCRYPTION BYPASS...]','[CRYPTO-BARRIER BREACHED]','[ROOT LOGIN...]','[KEYSTREAM: OK]','[TRACING... REDIRECTED]','[DATA LINK UP]','[TRINITY: "I\'m inside."]'],i=0;var iv=setInterval(function(){if(i<m.length)tp(m[i++],'green');else{clearInterval(iv);tp('[ACCESS GRANTED]','green');}},400);}
 function doRain(){rainActive=!rainActive;var c=document.getElementById('matrixCanvas');if(c)c.style.opacity=rainActive?'0.4':'0';tp(rainActive?'Matrix rain: ON \u2014 the code is everywhere.':'Matrix rain: OFF \u2014 you see only darkness.','green');}
@@ -236,6 +240,7 @@ function doAbout(){tp('error-wtf // MATRIX PORTAL','green');tp('SSZ physics | to
 async function loadChatDB(){try{var r=await fetch('chat_db.json');var d=await r.json();Object.assign(CHAT_DB,d);}catch(e){console.error('chat_db load error',e);}}
 document.addEventListener('DOMContentLoaded',async function(){await loadChatDB();initChat();
 var tc=document.getElementById('tetrisClose');if(tc)tc.addEventListener('click',closeTetris);
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){var o=document.getElementById('tetrisOverlay');if(o&&o.style.display==='block')closeTetris();}});
+var rc=document.getElementById('radioClose');if(rc)rc.addEventListener('click',closeRadio);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){var o=document.getElementById('tetrisOverlay');if(o&&o.style.display==='block')closeTetris();var r=document.getElementById('radioOverlay');if(r&&r.style.display==='block')closeRadio();}});
 window.addEventListener('message',function(e){if(e.data==='closeTetris')closeTetris();});
 });
