@@ -298,7 +298,9 @@ async function loadFile(repoName, filePath) {
         const text = await rawFetch(url);
         let content;
         if (ext === 'md' || filePath.toLowerCase().endsWith('readme')) {
-            content = '<div class="md-rendered">' + renderMarkdown(text) + '</div>';
+            const dirPath = filePath.includes('/') ? filePath.substring(0, filePath.lastIndexOf('/') + 1) : '';
+            const baseUrl = RAW + '/' + OWNER + '/' + repoName + '/' + currentRepo.default_branch + '/' + dirPath;
+            content = '<div class="md-rendered">' + renderMarkdown(text, baseUrl) + '</div>';
         } else {
             content = '<pre><code>' + escapeHtml(text) + '</code></pre>';
         }

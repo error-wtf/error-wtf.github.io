@@ -1,4 +1,12 @@
-function renderMarkdown(md) {
+var _mdBaseUrl = '';
+function _resolveUrl(u) {
+    if (!_mdBaseUrl) return u;
+    if (/^(https?:\/\/|data:|#|mailto:|\/\/)/.test(u)) return u;
+    if (u.startsWith('./')) u = u.substring(2);
+    return _mdBaseUrl + u;
+}
+function renderMarkdown(md, baseUrl) {
+    _mdBaseUrl = baseUrl || '';
     var cb = [];
     md = md.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, l, c) {
         cb.push('<pre><code>' + escapeHtml(c) + '</code></pre>');
@@ -49,8 +57,8 @@ function inl(s) {
     var ph = [];
     function hold(h) { ph.push(h); return '\x00P'+( ph.length-1)+'P\x00'; }
     s = s.replace(/`([^`]+)`/g, function(_,t){ return hold('<code>'+t+'</code>'); });
-    s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(_,a,u){ return hold('<img alt="'+a+'" src="'+u+'" style="max-width:100%">'); });
-    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_,t,u){ return hold('<a href="'+u+'" target="_blank">'+t+'</a>'); });
+    s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(_,a,u){ return hold('<img alt="'+a+'" src="'+_resolveUrl(u)+'" style="max-width:100%">'); });
+    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_,t,u){ return hold('<a href="'+_resolveUrl(u)+'" target="_blank">'+t+'</a>'); });
     s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     s = s.replace(/__(.+?)__/g, '<strong>$1</strong>');
     s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
