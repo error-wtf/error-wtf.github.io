@@ -231,7 +231,7 @@ tC('\u2014 The Matrix is everywhere. But so is hope. \u2014','dim');
 }
 
 function doTetris(){tp('[LOADING MATRIX TETRIS...]','green');setTimeout(function(){var o=document.getElementById('tetrisOverlay'),f=document.getElementById('tetrisFrame');if(o&&f){f.src='tetris.html?user=operator';o.style.display='block';}else tp('Tetris not available.','red');},500);}
-function doRadio(){tp('[TUNING INTO THE MATRIX FREQUENCIES...]','green');setTimeout(function(){var o=document.getElementById('radioOverlay'),f=document.getElementById('radioFrame');if(o&&f){f.src='https://error-wtf.github.io/webamp-embed/';o.style.display='block';}else tp('Radio not available.','red');},500);}
+function doRadio(){tp('[TUNING INTO THE MATRIX FREQUENCIES...]','green');setTimeout(function(){var o=document.getElementById('radioOverlay'),f=document.getElementById('radioFrame');if(o&&f){f.src='https://error-wtf.github.io/webamp-embed/?v=20260802';o.style.display='block';}else tp('Radio not available.','red');},500);}
 function closeRadio(){var o=document.getElementById('radioOverlay'),f=document.getElementById('radioFrame');if(o){o.style.display='none';f.src='';}}
 function closeTetris(){var o=document.getElementById('tetrisOverlay'),f=document.getElementById('tetrisFrame');if(o){o.style.display='none';f.src='';}}
 function doHack(){var m=['[ACCESSING MAINFRAME...]','[ENCRYPTION BYPASS...]','[CRYPTO-BARRIER BREACHED]','[ROOT LOGIN...]','[KEYSTREAM: OK]','[TRACING... REDIRECTED]','[DATA LINK UP]','[TRINITY: "I\'m inside."]'],i=0;var iv=setInterval(function(){if(i<m.length)tp(m[i++],'green');else{clearInterval(iv);tp('[ACCESS GRANTED]','green');}},400);}

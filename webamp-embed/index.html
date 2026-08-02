@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webamp Player</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    #loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      color: #0f0;
+      font: 14px "Courier New", monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="loading">Loading Webamp...</div>
+
+  <script src="https://unpkg.com/webamp@1.5.0/built/webamp.bundle.min.js"></script>
+  <script>
+    const PLAYLIST_URL = "https://error.wtf/up/RADIO.m3u";
+    const RELAY_BASE = "https://error.wtf/webamp-embed/stream.php?id=";
+
+    const relayIdByUrl = {
+      "https://securestreams5.autopo.st:1860/error": "error",
+      "https://securestreams5.autopo.st:1860/TELEFON": "telefon",
+      "https://s2.ssl-stream.com/listen/uk_bass_radio/stream": "ukbass",
+      "http://ice.bassdrive.net/stream": "bassdrive",
+      "https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3": "dlf",
+      "http://icecast.ndr.de/ndr/ndr1niedersachsen/lueneburg/mp3/128/stream.mp3": "ndr",
+      "https://dispatcher.rndfnk.com/hr/hrinfo/live/mp3/high": "hrinfo",
+      "http://www.radio-r.net:8000/radio-r": "radior",
+      "http://streaming.fueralle.org:80/fsk.mp3": "fsk",
+      "http://stream.radiox.de:8000/live": "radiox",
+      "https://mp3.querfunk.de/qfhi": "querfunk",
+      "http://stream.laut.fm/local_heroes": "localheroes",
+      "http://www.rdl.de:8000/rdl": "rdl",
+      "http://www.radioeins.de/livemp3": "radioeins",
+      "http://bytefm.cast.addradio.de/bytefm/main/mid/stream": "bytefm",
+      "https://dispatcher.rndfnk.com/hr/hr3/live/mp3/high": "hr3",
+      "https://liveradio.swr.de/sw282p3/swr3/play.mp3": "swr3",
+      "http://streams.deltaradio.de/delta-live/mp3-192/mediaplayer": "delta",
+      "http://wdr-1live-live.icecast.wdr.de/wdr/1live/live/mp3/128/stream.mp3": "onelive",
+      "https://dispatcher.rndfnk.com/rbb/fritz/live/mp3/mid": "fritz",
+      "http://ice5.somafm.com/groovesalad-256-mp3": "soma",
+      "https://stream.laut.fm/inklusion": "bhr",
+      "http://136.243.79.109:1960/stream": "chill"
+    };
+
+    const fallbackStations = [
+      ["ERRORCOMPANY", "LIVE", "error"],
+      ["ERRORCOMPANY", "TELEFON", "telefon"],
+      ["Radio", "UK BASS", "ukbass"],
+      ["Radio", "BASSDRIVE", "bassdrive"],
+      ["Radio", "DLF", "dlf"],
+      ["Radio", "NDR INFO", "ndr"],
+      ["Radio", "HR INFO", "hrinfo"],
+      ["Radio", "RADIO RÜSSELSHEIM", "radior"],
+      ["Radio", "FSK", "fsk"],
+      ["Radio", "RADIO X", "radiox"],
+      ["Radio", "QUERFUNK", "querfunk"],
+      ["Radio", "LOCAL HEROES - LUENEBURG RADIO", "localheroes"],
+      ["Radio", "RADIO DREYECKLAND", "rdl"],
+      ["Radio", "radioeins vom rbb live hören - www.radioeins.de", "radioeins"],
+      ["Radio", "Byte.FM Webradio - www.byte.fm", "bytefm"],
+      ["Radio", "HR3", "hr3"],
+      ["Radio", "SWR 3", "swr3"],
+      ["Radio", "DELTA", "delta"],
+      ["Radio", "1LIVE", "onelive"],
+      ["Radio", "FRITZ", "fritz"],
+      ["Radio", "SOMA", "soma"],
+      ["Radio", "BHR E.V.", "bhr"],
+      ["Radio", "Unknown", "chill"]
+    ];
+
+    function relayTrack(artist, title, relayId) {
+      return {
+        metaData: { artist, title },
+        url: RELAY_BASE + encodeURIComponent(relayId)
+      };
+    }
+
+    function fallbackTracks() {
+      return fallbackStations.map(station => relayTrack(...station));
+    }
+
+    async function playlistTracks() {
+      const response = await fetch(PLAYLIST_URL + "?v=" + Date.now(), {
+        cache: "no-store",
+        mode: "cors"
+      });
+      if (!response.ok) throw new Error("Playlist HTTP " + response.status);
+
+      const tracks = [];
+      let metaData = null;
+      for (const rawLine of (await response.text()).split(/\r?\n/)) {
+        const line = rawLine.trim();
+        if (!line) continue;
+        if (line.startsWith("#EXTINF:")) {
+          const label = line.slice(line.indexOf(",") + 1).trim();
+          const separator = label.indexOf(" - ");
+          metaData = separator >= 0
+            ? {
+                artist: label.slice(0, separator).trim(),
+                title: label.slice(separator + 3).trim()
+              }
+            : { artist: "Radio", title: label };
+          continue;
+        }
+        if (line.startsWith("#")) continue;
+
+        const relayId = relayIdByUrl[line];
+        tracks.push(relayId
+          ? relayTrack(
+              (metaData && metaData.artist) || "Radio",
+              (metaData && metaData.title) || "Stream",
+              relayId
+            )
+          : {
+              metaData: metaData || { artist: "Radio", title: "Stream" },
+              url: line
+            });
+        metaData = null;
+      }
+      if (!tracks.length) throw new Error("Playlist is empty");
+      return tracks;
+    }
+
+    async function initWebamp() {
+      const loading = document.getElementById("loading");
+      let tracks;
+      try {
+        tracks = await playlistTracks();
+      } catch (error) {
+        console.warn("Using verified relay fallback:", error);
+        tracks = fallbackTracks();
+      }
+
+      const webamp = new Webamp({ initialTracks: tracks });
+      let currentTrack = null;
+      let relayConnectedAt = 0;
+      let reconnecting = false;
+
+      webamp.onTrackDidChange(track => {
+        currentTrack = track;
+        relayConnectedAt = track && track.url.startsWith(RELAY_BASE)
+          ? Date.now()
+          : 0;
+      });
+
+      setInterval(() => {
+        if (
+          reconnecting ||
+          !currentTrack ||
+          !relayConnectedAt ||
+          Date.now() - relayConnectedAt < 105000 ||
+          webamp.getMediaStatus() !== "PLAYING"
+        ) return;
+
+        reconnecting = true;
+        relayConnectedAt = Date.now();
+        webamp.stop();
+        setTimeout(() => {
+          Promise.resolve(webamp.play()).catch(() => {});
+          reconnecting = false;
+        }, 50);
+      }, 1000);
+
+      try {
+        await webamp.renderWhenReady(document.getElementById("app"));
+        loading.remove();
+        Promise.resolve(webamp.play()).catch(() => {});
+      } catch (error) {
+        loading.textContent = "Error: " + error.message;
+      }
+    }
+
+    initWebamp();
+  </script>
+</body>
+</html>
